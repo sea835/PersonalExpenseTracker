@@ -1,0 +1,91 @@
+﻿@model PersonalExpenseTracker.ViewModels.CategoryViewModel
+@{
+    var a = Model;
+}
+<a class="btn btn-success mb-4 shadow-sm px-4 py-2 rounded-pill" href="@Url.Action("AddCategory")">
+    <i class="fas fa-plus me-2"></i>Thêm danh mục
+</a>
+<table id="category-table" class="table table-bordered table-hover table-striped text-center align-middle">
+    <thead class="text-center table-dark">
+    <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section Scripts {
+    <script>
+        const category = $("#category-table").DataTable({
+            language: {
+                decimal: ",",
+                thousands: ".",
+                emptyTable: "Không có dữ liệu",
+                info: "Hiển thị _START_ đến _END_ trong tổng _TOTAL_ mục",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+                infoFiltered: "(lọc từ _MAX_ mục)",
+                lengthMenu: "Hiển thị _MENU_ mục",
+                loadingRecords: "Đang tải...",
+                processing: "Đang xử lý...",
+                search: "Tìm kiếm:",
+                zeroRecords: "Không tìm thấy kết quả phù hợp",
+                paginate: {
+                    first: "Đầu",
+                    last: "Cuối",
+                    next: "Tiếp",
+                    previous: "Trước"
+                },
+                aria: {
+                    sortAscending: ": sắp xếp tăng dần",
+                    sortDescending: ": sắp xếp giảm dần"
+                }
+            },
+            responsive: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            ajax: {
+                url: "@Url.Action("GetAllCategories")",
+                method: "GET",
+            },
+            columns: [
+                {data: "id"},
+                {data: "name"},
+                {
+                    data: "id",
+                    render: function (data, type, row) {
+                        return `<div>
+                                    <a type="button" class="btn btn-edit btn-sm" href="/Category/EditCategory/${data}"">
+                                        <i class="fas fa-pen"></i> Sửa
+                                    </a>
+                                    <a type="submit" class="btn btn-delete btn-sm" onclick="handleDelete(${data})">
+                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    </a>
+                                </div>`
+                    },
+                }
+            ]
+        });
+    </script>
+    <script>
+        function handleDelete(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa danh mục này?")) return;
+    
+            $.ajax({
+                url: '@Url.Action("DeleteCategory")',
+                data: { id: id },
+                method: 'POST',
+                success: function () {
+                    alert("Đã xóa thành công.");
+                    category.ajax.reload();
+                },
+                error: function () {
+                    alert("Không thể xóa danh mục.");
+                }
+            });
+        }
+    </script>
+}

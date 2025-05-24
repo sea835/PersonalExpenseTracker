@@ -1,0 +1,54 @@
+﻿@model List<Expense>
+
+<button class="btn btn-success mb-4 shadow-sm px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#addModal">
+    <i class="fas fa-plus me-2"></i>Thêm khoản chi
+</button>
+
+<table id="expenseTable" class="table table-hover align-middle shadow rounded">
+    <thead class="text-center table-dark">
+    <tr>
+        <th>Ngày</th>
+        <th>Số tiền</th>
+        <th>Danh mục</th>
+        <th>Ghi chú</th>
+        <th class="text-center">Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.date.ToString("dd/MM/yyyy")</td>
+            <td>@item.amount.ToString("N0") ₫</td>
+            <td>@item.Category?.name</td>
+            <td>@item.description</td>
+            <td class="text-center">
+                <button type="button"
+                        class="btn btn-edit btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editModal"
+                        data-id="@item.id"
+                        data-date="@item.date.ToString("yyyy-MM-dd")"
+                        data-amount="@item.amount"
+                        data-description="@item.description"
+                        data-categoryid="@item.categoryId">
+                    <i class="fas fa-pen"></i> Sửa
+                </button>
+                <form asp-action="DeleteExpense" method="post" style="display:inline;">
+                    <input type="hidden" name="expenseId" value="@item.id" />
+                    <button type="submit" class="btn btn-delete btn-sm" onclick="return confirm('Bạn có chắc muốn xóa không?')">
+                        <i class="fas fa-trash-alt"></i> Xóa
+                    </button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+@{
+    var categories = ViewData["Categories"] as List<Category> ?? new List<Category>();
+}
+@await Html.PartialAsync("_AddModal", categories)
+@await Html.PartialAsync("_EditModal", categories)

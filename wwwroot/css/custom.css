@@ -1,0 +1,19 @@
+﻿.select2{
+    min-width: 100px;
+    max-width: 150px;
+}
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 1rem;
+}
+
+main {
+    margin-left: 250px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

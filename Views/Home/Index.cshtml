@@ -1,0 +1,19 @@
+﻿@model List<Expense>
+<table class="table">
+    <tr>
+        <th>Ngày</th><th>Số tiền</th><th>Danh mục</th><th>Ghi chú</th><th>Hành động</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.date.ToShortDateString()</td>
+            <td>@item.amount</td>
+            <td>@item.categoryId</td>
+            <td>@item.description</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Sửa</a> |
+                <a asp-action="Delete" asp-route-id="@item.id">Xóa</a>
+            </td>
+        </tr>
+    }
+</table>

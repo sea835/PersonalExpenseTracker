@@ -1,0 +1,23 @@
+﻿@model PersonalExpenseTracker.ViewModels.CategoryViewModel
+
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm p-4" style="min-width: 400px;">
+        <div class="text-center mb-3">
+            <i class="fas fa-tags fa-2x text-primary"></i>
+            <h4 class="mt-2">Thêm danh mục chi tiêu</h4>
+            <p class="text-muted mb-0">Điền tên danh mục bạn muốn thêm</p>
+        </div>
+        <form asp-action="AddCategory" asp-controller="Category" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label fw-semibold">Tên danh mục</label>
+                <input type="text" class="form-control" id="name" name="name" asp-for="name" placeholder="Nhập tên danh mục...">
+                <span asp-validation-for="name" class="text-danger small"></span>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Lưu danh mục
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

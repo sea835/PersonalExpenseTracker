@@ -1,0 +1,226 @@
+﻿<button class="btn btn-success mb-4 shadow-sm px-4 py-2 rounded-pill" data-bs-toggle="modal" data-bs-target="#addModal">
+    <i class="fas fa-plus me-2"></i>Thêm khoản chi
+</button>
+<div>
+    <table id="expense-content" class="table table-bordered table-hover table-striped text-center align-middle">
+        <thead class="text-center table-dark">
+        <tr>
+            <th>Ngày</th>
+            <th>Số tiền</th>
+            <th>Danh mục</th>
+            <th>Ghi chú</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <partial name="Partials/_AddModal"/>
+    <partial name="Partials/_EditModal"/>
+
+    <script>
+        const expense_table = $('#expense-content').DataTable({
+            language: {
+                decimal: ",",
+                thousands: ".",
+                emptyTable: "Không có dữ liệu",
+                info: "Hiển thị _START_ đến _END_ trong tổng _TOTAL_ mục",
+                infoEmpty: "Hiển thị 0 đến 0 của 0 mục",
+                infoFiltered: "(lọc từ _MAX_ mục)",
+                lengthMenu: "Hiển thị _MENU_ mục",
+                loadingRecords: "Đang tải...",
+                processing: "Đang xử lý...",
+                search: "Tìm kiếm:",
+                zeroRecords: "Không tìm thấy kết quả phù hợp",
+                paginate: {
+                    first: "Đầu",
+                    last: "Cuối",
+                    next: "Tiếp",
+                    previous: "Trước"
+                },
+                aria: {
+                    sortAscending: ": sắp xếp tăng dần",
+                    sortDescending: ": sắp xếp giảm dần"
+                }
+            },
+            responsive: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            ajax: {
+                url: "@Url.Action("GetAllExpenses")",
+                method: "GET",
+            },
+            columns: [
+                {
+                    data: 'date',
+                    render: function (data) {
+                        return data ? moment(new Date(data)).format("DD/MM/YYYY") : '';
+                    }
+                },
+                {data: 'amount'},
+                {data: 'category.name'},
+                {data: 'description'},
+                {
+                    data: 'id',
+                    render: function (data, type, row) {
+                        return `<div>
+                                        <button type="button" onclick="handleEdit(${data})" class="btn btn-edit btn-sm">
+                                            <i class="fas fa-pen"></i> Sửa
+                                        </button>
+                                        <button type="submit" class="btn btn-delete btn-sm" onclick="handleDelete(${data})">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </button>
+                                    </div>`
+                    },
+                }
+            ]
+        });
+    </script>
+    <script>
+        $(document).on('show.bs.modal', '#addModal', function (event) {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const formattedDate = `${yyyy}-${mm}-${dd}`;
+            const input = document.getElementById('add-date');
+            if (input) input.value = formattedDate;
+        })
+    </script>
+    <script>
+        $("#edit-category").select2({
+            placeholder: "Chọn danh mục",
+            dropdownParent: $('#editModal'),
+            ajax: {
+                url: '@Url.Action("GetAllCategories", "Category")',
+                dataType: 'json',
+                data: function (params) {
+                    return {
+
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.data.map(x => ({ id: x.id, text: x.name }))
+                    };
+                },
+                cache: true
+            }
+        })
+    </script>
+    <script>
+        $("#category").select2({
+            placeholder: "Chọn danh mục",
+            dropdownParent: $('#addModal'),
+            ajax: {
+                url: '@Url.Action("GetAllCategories", "Category")',
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.data.map(x => ({ id: x.id, text: x.name }))
+                    };
+                },
+                cache: true
+            }
+        })
+    </script>
+    <script>
+        function handleSubmit() {
+            const expense = {
+                Id: $('#edit-id').val(),
+                Date: $('#edit-date').val(),
+                Amount: $('#edit-amount').val(),
+                CategoryId: $('#edit-category').val(),
+                Description: $('#edit-description').val()
+            };
+            $.ajax({
+                url: "@Url.Action("UpdateExpense")",
+                type: "POST",
+                data: expense,
+                success: function (data) {
+                    $('#editModal').modal('hide'); // Đóng modal
+                    expense_table.ajax.reload();
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra khi cập nhật.");
+                }
+            })
+        }
+    </script>
+    <script>
+        const handleEdit = (id) => {
+            $.ajax({
+                url: '@Url.Action("GetExpense", "Expense")' + '?' + $.param({id}),
+                type: 'GET',
+                success: function (data) {
+                    // Xử lý dữ liệu nhận được
+                    console.log(data);
+                    // Gán vào form modal nếu cần
+                    $('#edit-id').val(data.id);
+                    $('#edit-date').val(data.date ? moment(data.date).format("YYYY-MM-DD") : '');
+                    $('#edit-amount').val(data.amount);
+                    $('#edit-description').val(data.description);
+                    $('#edit-category').val(data.categoryId);
+
+                    // Hiển thị modal
+                    $('#editModal').modal('show');
+                },
+                error: function () {
+                    alert("Không thể tải dữ liệu chi tiêu.");
+                }
+            });
+        };
+    </script>
+    <script>
+        function handleDelete(id) {
+            if (!confirm('Bạn có chắc chắn muốn xóa khoản chi này?')) return;
+            $.ajax({
+                url: '@Url.Action("DeleteExpense")',
+                data: {id},
+                type: 'POST',
+                success: function (data) {
+                    expense_table.ajax.reload();
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra khi xóa.");
+                },
+            });
+        }
+    </script>
+    <script>
+        function handleAdd() {
+            const expense = {
+                Date: $('#add-date').val(),
+                Amount: $('#add-amount').val(),
+                CategoryId: $('#add-category').val(),
+                Description: $('#add-description').val()
+            };
+            $.ajax({
+                url: "@Url.Action("AddExpense")",
+                type: "POST",
+                data: expense,
+                success: function (data) {
+                    $('#addModal').modal('hide'); // Đóng modal
+                    expense_table.ajax.reload();
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra khi thêm chi tiêu.");
+                }
+            });
+        }
+    </script>
+}
+
+@{
+    var categories = ViewData["Categories"] as List<Category> ?? new List<Category>();
+}
+

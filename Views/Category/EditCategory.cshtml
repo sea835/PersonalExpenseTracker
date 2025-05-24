@@ -1,0 +1,24 @@
+﻿@model PersonalExpenseTracker.ViewModels.CategoryViewModel
+
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card shadow-sm p-4" style="min-width: 400px;">
+        <div class="text-center mb-3">
+            <i class="fas fa-edit fa-2x text-warning"></i>
+            <h4 class="mt-2">Chỉnh sửa danh mục</h4>
+            <p class="text-muted mb-0">Cập nhật tên danh mục bạn muốn thay đổi</p>
+        </div>
+        <form asp-action="EditCategory" asp-controller="Category" method="post">
+            <input type="hidden" asp-for="id" />
+            <div class="mb-3">
+                <label for="categoryName" class="form-label fw-semibold">Tên danh mục</label>
+                <input type="text" class="form-control" id="categoryName" asp-for="name" placeholder="Nhập tên danh mục...">
+                <span asp-validation-for="name" class="text-danger small"></span>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-save me-1"></i> Cập nhật danh mục
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
