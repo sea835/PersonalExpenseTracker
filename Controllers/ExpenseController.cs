@@ -43,7 +43,7 @@ namespace PersonalExpenseTracker.Controllers
         public IActionResult AddExpense(Expense expense)
         {
             _expenseService.AddExpense(expense);
-            return RedirectToAction("Index");
+            return Json(expense);
         }
 
         [HttpPost]

@@ -113,7 +113,7 @@
         })
     </script>
     <script>
-        $("#category").select2({
+        $("#add-category").select2({
             placeholder: "Chọn danh mục",
             dropdownParent: $('#addModal'),
             ajax: {
@@ -159,26 +159,43 @@
     <script>
         const handleEdit = (id) => {
             $.ajax({
-                url: '@Url.Action("GetExpense", "Expense")' + '?' + $.param({id}),
+                url: '@Url.Action("GetExpense", "Expense")' + '?' + $.param({ id }),
                 type: 'GET',
                 success: function (data) {
-                    // Xử lý dữ liệu nhận được
-                    console.log(data);
-                    // Gán vào form modal nếu cần
                     $('#edit-id').val(data.id);
                     $('#edit-date').val(data.date ? moment(data.date).format("YYYY-MM-DD") : '');
                     $('#edit-amount').val(data.amount);
                     $('#edit-description').val(data.description);
-                    $('#edit-category').val(data.categoryId);
 
-                    // Hiển thị modal
-                    $('#editModal').modal('show');
+                    // Gán categoryId sau khi Select2 đã load
+                    const $select = $('#edit-category');
+
+                    // Clear trước tránh bị duplicate
+                    $select.val(null).trigger('change');
+
+                    // Gọi lại AJAX để đảm bảo dữ liệu đã load
+                    $.ajax({
+                        url: '@Url.Action("GetAllCategories", "Category")',
+                        dataType: 'json',
+                        success: function (res) {
+                            const list = res.data || [];
+                            const found = list.find(x => x.id === data.categoryId);
+
+                            if (found) {
+                                const newOption = new Option(found.name, found.id, true, true);
+                                $select.append(newOption).trigger('change');
+                            }
+
+                            $('#editModal').modal('show');
+                        }
+                    });
                 },
                 error: function () {
                     alert("Không thể tải dữ liệu chi tiêu.");
                 }
             });
         };
+
     </script>
     <script>
         function handleDelete(id) {

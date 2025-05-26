@@ -1,6 +1,6 @@
 ﻿<div class="modal fade" id="addModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <form asp-action="AddExpense" method="post" class="modal-content shadow-lg rounded-3 border-0">
+        <form class="modal-content shadow-lg rounded-3 border-0">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title"><i class="fas fa-money-bill-wave"></i> Thêm khoản chi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -13,21 +13,21 @@
                     </div>
                     <div class="col-md-6">
                         <label for="amount" class="form-label">Số tiền</label>
-                        <input type="number" class="form-control" id="amount" name="Amount" required />
+                        <input type="number" class="form-control" id="add-amount" name="Amount" required />
                     </div>
                     <div class="col-md-6">
                         <label for="category" class="form-label">Danh mục</label>
-                        <select id="category" name="CategoryId" class="form-select select2"  required>
+                        <select id="add-category" name="CategoryId" class="form-select select2"  required>
                         </select>
                     </div>
                     <div class="col-12">
                         <label for="description" class="form-label">Ghi chú</label>
-                        <input type="text" class="form-control" id="description" name="Description" required />
+                        <input type="text" class="form-control" id="add-description" name="Description" required />
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-success">
+                <button type="button" onclick="handleAdd()" class="btn btn-success">
                     <i class="fas fa-save"></i> Lưu
                 </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
